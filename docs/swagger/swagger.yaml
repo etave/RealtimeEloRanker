@@ -1,0 +1,10 @@
+openapi: "3.0.0"
+info:
+  title: "Realtime ELO Ranker API"
+  description: "API documentation for the Realtime ELO Ranker"
+  version: "0.1.0"
+servers:
+  - url: "http://localhost:3000"
+    description: "Local server"
+paths: {}
+components: {}

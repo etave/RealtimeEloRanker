@@ -1,0 +1,12 @@
+{
+  "name": "realtime-elo-ranker",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "scripts": {
+    "apps:client:dev": "pnpm run --filter ./apps/realtime-elo-ranker-client dev",
+    "docs:swagger:start": "pnpm run --filter ./docs/swagger start"
+  }
+}
