@@ -49,6 +49,14 @@ Le serveur est en hot-reload : les modifications apportées au `swagger.yaml` se
 
 **Note :** Si le live-reload ne fonctionne pas, pensez à forwarder le port `35729` dans l'IDE.
 
+## Lancer le mock de l'API
+
+```bash
+pnpm run apps:api-mock:start
+```
+
+Le mock de l'API sera accessible à l'adresse `http://localhost:8080`. Il ne doit pas être lancé en même temps que le serveur de l'application.
+
 # Architecture
 
 ## Back for Front
@@ -69,7 +77,11 @@ Le code client est fourni dans le dossier `apps/realtime-elo-ranker-client`.
 
 ## API
 
-L'API Web du serveur devra exposer les fonctionnalités telles que décrites dans le swagger fourni.
+L'API Web du serveur devra exposer les fonctionnalités telles que décrites dans le [swagger](#lancer-la-doc-swagger) fourni.
+
+### Mock de l'API
+
+Un [mock de l'API](#lancer-le-mock-de-lapi) est fourni pour tester le client sans avoir à implémenter le serveur. Le mock de l'API répondra aux requêtes du client avec des messages prédéfinis. Il ne gère pas les mises à jour en temps réel du classement.
 
 # Règles de gestion
 
