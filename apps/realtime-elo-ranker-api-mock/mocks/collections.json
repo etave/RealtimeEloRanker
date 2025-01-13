@@ -1,0 +1,9 @@
+[
+  {
+    "id": "base",
+    "routes": [
+      "get-ranking-events-random:success",
+      "get-ranking:success"
+    ]
+  }
+]
