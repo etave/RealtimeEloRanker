@@ -1,13 +1,6 @@
 import React, { FC } from "react";
-import { Poppins } from "next/font/google";
 import LadderItem, { PlayerData } from "./LadderItem/LadderItem";
 import { AnimatePresence, motion } from "motion/react";
-
-const poppinsSemiBold = Poppins({
-  weight: "500",
-  style: "normal",
-  variable: "--poppins-semi-bold",
-});
 
 interface RankingLadderProps {
   data: PlayerData[];
@@ -25,13 +18,12 @@ interface RankingLadderProps {
 const RankingLadder: FC<RankingLadderProps> = (props) => {
   const { data } = props;
 
+  // return(<></>)
+
   return (
-    <div data-testid="RankingLadder">
-      <h2 className={`${poppinsSemiBold.className} text-2xl`}>
-        Classement des joueurs
-      </h2>
-      <div className="pt-12 columns-4 gap-4">
-        <AnimatePresence>
+    <div data-testid="RankingLadder" className="h-full">
+      <AnimatePresence>
+        <div className="pt-4 columns-8 gap-4 overflow-x-auto max-h-full themed-scrollbar">
           {data.map((player) => (
             <motion.div
               key={player.id}
@@ -50,8 +42,8 @@ const RankingLadder: FC<RankingLadderProps> = (props) => {
               <LadderItem player={player} />
             </motion.div>
           ))}
-        </AnimatePresence>
-      </div>
+        </div>
+      </AnimatePresence>
     </div>
   );
 };

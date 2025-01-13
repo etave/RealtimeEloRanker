@@ -11,5 +11,10 @@ const URL = "/api/ranking";
  */
 export default function fetchRanking(baseUrl: string): Promise<PlayerData[]> {
   return fetch(baseUrl + URL, { method: "GET" })
-    .then(response => response.json());
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error("Failed to fetch ranking");
+    });
 }

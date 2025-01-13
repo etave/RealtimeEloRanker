@@ -30,7 +30,7 @@ module.exports = [
         id: "success",
         type: "middleware",
         options: {
-          middleware: async (req, res, next, core) => {
+          middleware: async (req, res, _next, core) => {
             res.writeHead(200, {
               'Content-Type': 'text/event-stream',
               'Content-Encoding': 'none',
@@ -48,7 +48,7 @@ module.exports = [
                     rank: Math.floor(Math.random() * 2500)
                   }
                 }) + '\n\n');
-              }, 1000);
+              }, 500);
               req.on('close', () => {
                 clearInterval(interval);
                 res.end();

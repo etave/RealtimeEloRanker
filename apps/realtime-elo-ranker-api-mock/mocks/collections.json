@@ -3,7 +3,9 @@
     "id": "base",
     "routes": [
       "get-ranking-events-random:success",
-      "get-ranking:success"
+      "get-ranking:success",
+      "post-player:success",
+      "post-match:success"
     ]
   }
 ]
