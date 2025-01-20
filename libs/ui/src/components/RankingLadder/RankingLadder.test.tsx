@@ -5,7 +5,12 @@ import RankingLadder from './RankingLadder';
 
 describe('<RankingLadder />', () => {
   test('it should mount', () => {
-    render(<RankingLadder />);
+    render(<RankingLadder data={[
+      {
+        id: "Player1",
+        rank: 2000
+      }
+    ]}/>);
 
     const rankingLadder = screen.getByTestId('RankingLadder');
 

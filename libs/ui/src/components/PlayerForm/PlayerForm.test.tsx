@@ -5,7 +5,10 @@ import PlayerForm from './PlayerForm';
 
 describe('<PlayerForm />', () => {
   test('it should mount', () => {
-    render(<PlayerForm />);
+    render(<PlayerForm callback={(pName) => {
+      console.log(pName);
+      return Promise.resolve(new Response());
+    }}/>);
 
     const playerForm = screen.getByTestId('PlayerForm');
 
