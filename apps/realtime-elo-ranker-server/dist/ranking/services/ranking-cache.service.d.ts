@@ -14,4 +14,6 @@ export declare class RankingCacheService {
     getRanking(): ResponsePlayerDto[];
     private sortRanking;
     initializeCache(players: ResponsePlayerDto[]): void;
+    clearCache(): void;
+    getAverageElo(): number;
 }

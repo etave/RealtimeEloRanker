@@ -9,13 +9,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreatePlayerDto = void 0;
-const class_validator_1 = require("class-validator");
-class CreatePlayerDto {
-}
-exports.CreatePlayerDto = CreatePlayerDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreatePlayerDto.prototype, "name", void 0);
-//# sourceMappingURL=create-player.dto.js.map
+exports.MatchService = void 0;
+const common_1 = require("@nestjs/common");
+const ranking_service_1 = require("../../ranking/services/ranking.service");
+let MatchService = class MatchService {
+    constructor(rankingService) {
+        this.rankingService = rankingService;
+    }
+    async processMatch(player1Id, player2Id, isDraw, winnerId) {
+        const matchResult = isDraw ? 0.5 : (winnerId === player1Id ? 1 : 0);
+    }
+};
+exports.MatchService = MatchService;
+exports.MatchService = MatchService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [ranking_service_1.RankingService])
+], MatchService);
+//# sourceMappingURL=match.service.js.map

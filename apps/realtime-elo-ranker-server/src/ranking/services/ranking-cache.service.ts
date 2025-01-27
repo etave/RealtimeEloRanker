@@ -65,4 +65,12 @@ export class RankingCacheService {
         this.ranking.clear();
         this.sortedRanking = [];
     }
+
+    public getAverageElo(): number {
+        let totalElo = this.sortedRanking.reduce((previousValue, currentValue) => previousValue + currentValue.elo, 0);
+        if (totalElo === 0) {
+            return 1200;
+        }
+        return totalElo / this.sortedRanking.length;
+    }
 }

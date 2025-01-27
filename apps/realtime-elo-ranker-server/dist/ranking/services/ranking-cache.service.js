@@ -17,6 +17,7 @@ let RankingCacheService = RankingCacheService_1 = class RankingCacheService {
     constructor(eventEmitter) {
         this.eventEmitter = eventEmitter;
         this.ranking = new Map();
+        this.sortedRanking = [];
     }
     static getInstance(eventEmitter) {
         if (!RankingCacheService_1.singleton) {
@@ -49,12 +50,24 @@ let RankingCacheService = RankingCacheService_1 = class RankingCacheService {
     sortRanking() {
         this.sortedRanking = Array.from(this.ranking.values())
             .sort((a, b) => b.elo - a.elo);
+        this.eventEmitter.emit('ranking.updated', this.sortedRanking);
     }
     initializeCache(players) {
         players.forEach(player => {
             this.ranking.set(player.id, player);
         });
         this.sortRanking();
+    }
+    clearCache() {
+        this.ranking.clear();
+        this.sortedRanking = [];
+    }
+    getAverageElo() {
+        let totalElo = this.sortedRanking.reduce((previousValue, currentValue) => previousValue + currentValue.elo, 0);
+        if (totalElo === 0) {
+            return 1200;
+        }
+        return totalElo / this.sortedRanking.length;
     }
 };
 exports.RankingCacheService = RankingCacheService;

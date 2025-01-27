@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { PlayerEntity } from "../players/entities/player.entity";
-import { ResponsePlayerDto } from "../players/dto/response-player.dto";
+import { PlayerEntity } from "../entities/player.entity";
+import { ResponsePlayerDto } from "../dto/response-player.dto";
 
 @Injectable()
 export class PlayerDatabaseService {
@@ -30,5 +30,9 @@ export class PlayerDatabaseService {
 
     async addPlayer(player: ResponsePlayerDto) {
         await this.playerRepository.insert(player);
+    }
+
+    async getAllPlayers(): Promise<ResponsePlayerDto[]> {
+        return this.playerRepository.find();
     }
 }
