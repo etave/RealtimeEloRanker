@@ -23,9 +23,6 @@ let PlayerDatabaseService = class PlayerDatabaseService {
     }
     async getPlayer(id) {
         const player = await this.playerRepository.findOne({ where: { id } });
-        if (!player) {
-            throw new Error(`Player ${id} not found`);
-        }
         return player;
     }
     async updatePlayer(player) {

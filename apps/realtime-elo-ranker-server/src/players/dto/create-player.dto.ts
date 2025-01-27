@@ -1,6 +1,6 @@
-import { IsString, IsOptional, IsNumber } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreatePlayerDto {
   @IsString()
-  name: string;
+  id: string;
 }

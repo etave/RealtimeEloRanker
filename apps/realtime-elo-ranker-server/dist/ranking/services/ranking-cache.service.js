@@ -16,8 +16,7 @@ const event_emitter_1 = require("@nestjs/event-emitter");
 let RankingCacheService = RankingCacheService_1 = class RankingCacheService {
     constructor(eventEmitter) {
         this.eventEmitter = eventEmitter;
-        this.ranking = new Map();
-        this.sortedRanking = [];
+        this.players = new Map();
     }
     static getInstance(eventEmitter) {
         if (!RankingCacheService_1.singleton) {
@@ -26,48 +25,39 @@ let RankingCacheService = RankingCacheService_1 = class RankingCacheService {
         return RankingCacheService_1.singleton;
     }
     getPlayer(id) {
-        const player = this.ranking.get(id);
+        const player = this.players.get(id);
         if (!player) {
             throw new Error(`Player ${id} not found`);
         }
         return player;
     }
     updatePlayer(player) {
-        this.ranking.set(player.id, player);
-        this.sortRanking();
+        this.players.set(player.id, player);
     }
     removePlayer(id) {
-        this.ranking.delete(id);
-        this.sortRanking();
+        this.players.delete(id);
     }
     addPlayer(player) {
-        this.ranking.set(player.id, player);
-        this.sortRanking();
-    }
-    getRanking() {
-        return this.sortedRanking;
-    }
-    sortRanking() {
-        this.sortedRanking = Array.from(this.ranking.values())
-            .sort((a, b) => b.elo - a.elo);
-        this.eventEmitter.emit('ranking.updated', this.sortedRanking);
+        this.players.set(player.id, player);
+        this.eventEmitter.emit('cache.updated', player.id);
     }
     initializeCache(players) {
-        players.forEach(player => {
-            this.ranking.set(player.id, player);
+        players.forEach((player) => {
+            this.players.set(player.id, player);
         });
-        this.sortRanking();
     }
     clearCache() {
-        this.ranking.clear();
-        this.sortedRanking = [];
+        this.players.clear();
+    }
+    getPlayers() {
+        return Array.from(this.players.values());
     }
     getAverageElo() {
-        let totalElo = this.sortedRanking.reduce((previousValue, currentValue) => previousValue + currentValue.elo, 0);
+        const totalElo = Array.from(this.players.values()).reduce((previousValue, currentValue) => previousValue + currentValue.rank, 0);
         if (totalElo === 0) {
             return 1200;
         }
-        return totalElo / this.sortedRanking.length;
+        return totalElo / this.players.size;
     }
 };
 exports.RankingCacheService = RankingCacheService;

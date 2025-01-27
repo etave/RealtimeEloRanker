@@ -9,20 +9,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MatchService = void 0;
+exports.MatchesController = void 0;
 const common_1 = require("@nestjs/common");
-const ranking_service_1 = require("../../ranking/services/ranking.service");
-let MatchService = class MatchService {
-    constructor(rankingService) {
-        this.rankingService = rankingService;
-    }
-    async processMatch(player1Id, player2Id, isDraw, winnerId) {
-        const matchResult = isDraw ? 0.5 : (winnerId === player1Id ? 1 : 0);
-    }
+let MatchesController = class MatchesController {
+    constructor() { }
 };
-exports.MatchService = MatchService;
-exports.MatchService = MatchService = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [ranking_service_1.RankingService])
-], MatchService);
-//# sourceMappingURL=match.service.js.map
+exports.MatchesController = MatchesController;
+exports.MatchesController = MatchesController = __decorate([
+    (0, common_1.Controller)('matches'),
+    __metadata("design:paramtypes", [])
+], MatchesController);
+//# sourceMappingURL=matches.controller.js.map

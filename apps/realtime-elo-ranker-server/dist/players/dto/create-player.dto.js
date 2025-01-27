@@ -17,5 +17,5 @@ exports.CreatePlayerDto = CreatePlayerDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], CreatePlayerDto.prototype, "name", void 0);
+], CreatePlayerDto.prototype, "id", void 0);
 //# sourceMappingURL=create-player.dto.js.map

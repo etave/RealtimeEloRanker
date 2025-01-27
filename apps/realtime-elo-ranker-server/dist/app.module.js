@@ -8,11 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const players_module_1 = require("./players/players.module");
-const ranking_module_1 = require("./ranking/ranking.module");
-const match_module_1 = require("./match/match.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const event_emitter_1 = require("@nestjs/event-emitter");
+const players_controller_1 = require("./players/controllers/players.controller");
+const matches_controller_1 = require("./matches/controllers/matches.controller");
+const ranking_controller_1 = require("./ranking/controllers/ranking.controller");
+const player_service_1 = require("./players/services/player.service");
+const player_database_service_1 = require("./players/services/player-database.service");
+const matches_service_1 = require("./matches/services/matches.service");
+const ranking_service_1 = require("./ranking/services/ranking.service");
+const ranking_cache_service_1 = require("./ranking/services/ranking-cache.service");
+const player_entity_1 = require("./players/entities/player.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -22,13 +28,24 @@ exports.AppModule = AppModule = __decorate([
             event_emitter_1.EventEmitterModule.forRoot(),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'sqlite',
-                database: 'db',
-                entities: [__dirname + '/**/*.entity{.ts,.js}'],
+                database: 'db.sqlite',
+                entities: [player_entity_1.PlayerEntity],
                 synchronize: true,
+                autoLoadEntities: true,
             }),
-            players_module_1.PlayersModule,
-            ranking_module_1.RankingModule,
-            match_module_1.MatchModule,
+            typeorm_1.TypeOrmModule.forFeature([player_entity_1.PlayerEntity]),
+        ],
+        controllers: [players_controller_1.PlayersController, matches_controller_1.MatchesController, ranking_controller_1.RankingController],
+        providers: [
+            player_service_1.PlayerService,
+            player_database_service_1.PlayerDatabaseService,
+            matches_service_1.MatchesService,
+            ranking_service_1.RankingService,
+            {
+                provide: ranking_cache_service_1.RankingCacheService,
+                useFactory: (eventEmitter) => ranking_cache_service_1.RankingCacheService.getInstance(eventEmitter),
+                inject: [event_emitter_1.EventEmitter2],
+            },
         ],
     })
 ], AppModule);

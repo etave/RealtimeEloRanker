@@ -1,5 +1,4 @@
 export class ResponsePlayerDto {
-    id: string;
-    name: string;
-    elo: number;
+  id: string;
+  rank: number;
 }

@@ -1,3 +1,3 @@
 export declare class CreatePlayerDto {
-    name: string;
+    id: string;
 }

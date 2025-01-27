@@ -9,7 +9,8 @@ async function bootstrap() {
         methods: ['GET', 'POST'],
         credentials: true,
     });
+    app.setGlobalPrefix('api');
     await app.listen(process.env.PORT ?? 8080);
 }
-bootstrap();
+void bootstrap();
 //# sourceMappingURL=main.js.map

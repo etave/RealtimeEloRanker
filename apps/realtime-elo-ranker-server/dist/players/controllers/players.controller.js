@@ -20,8 +20,8 @@ let PlayersController = class PlayersController {
     constructor(playerService) {
         this.playerService = playerService;
     }
-    async create(createPlayerDto) {
-        return await this.playerService.addPlayer(createPlayerDto.name);
+    async createPlayer(createPlayerDto) {
+        return await this.playerService.addPlayer(createPlayerDto.id);
     }
     async getAllPlayers() {
         return await this.playerService.getAllPlayers();
@@ -40,7 +40,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_player_dto_1.CreatePlayerDto]),
     __metadata("design:returntype", Promise)
-], PlayersController.prototype, "create", null);
+], PlayersController.prototype, "createPlayer", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
@@ -62,7 +62,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PlayersController.prototype, "deletePlayer", null);
 exports.PlayersController = PlayersController = __decorate([
-    (0, common_1.Controller)('players'),
+    (0, common_1.Controller)('player'),
     __metadata("design:paramtypes", [player_service_1.PlayerService])
 ], PlayersController);
 //# sourceMappingURL=players.controller.js.map

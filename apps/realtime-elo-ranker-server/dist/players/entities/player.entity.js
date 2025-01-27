@@ -15,17 +15,13 @@ let PlayerEntity = class PlayerEntity {
 };
 exports.PlayerEntity = PlayerEntity;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
+    (0, typeorm_1.PrimaryColumn)('text'),
     __metadata("design:type", String)
 ], PlayerEntity.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], PlayerEntity.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)('integer'),
     __metadata("design:type", Number)
-], PlayerEntity.prototype, "elo", void 0);
+], PlayerEntity.prototype, "rank", void 0);
 exports.PlayerEntity = PlayerEntity = __decorate([
     (0, typeorm_1.Entity)('players')
 ], PlayerEntity);

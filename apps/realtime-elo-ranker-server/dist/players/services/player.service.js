@@ -13,18 +13,23 @@ exports.PlayerService = void 0;
 const common_1 = require("@nestjs/common");
 const player_database_service_1 = require("./player-database.service");
 const ranking_cache_service_1 = require("../../ranking/services/ranking-cache.service");
-const uuid_1 = require("uuid");
 let PlayerService = class PlayerService {
     constructor(rankingCacheService, playerDatabaseService) {
         this.rankingCacheService = rankingCacheService;
         this.playerDatabaseService = playerDatabaseService;
     }
-    async addPlayer(name) {
+    async addPlayer(id) {
         const player = {
-            id: (0, uuid_1.v4)(),
-            name: name,
-            elo: this.rankingCacheService.getAverageElo()
+            id: id,
+            rank: this.rankingCacheService.getAverageElo(),
         };
+        if (!id || id.trim() === '') {
+            throw new common_1.BadRequestException('Player name is not valid');
+        }
+        const existingPlayer = await this.playerDatabaseService.getPlayer(id);
+        if (existingPlayer) {
+            throw new common_1.ConflictException(`Player ${id} already exists`);
+        }
         await this.playerDatabaseService.addPlayer(player);
         this.rankingCacheService.addPlayer(player);
         return player;
