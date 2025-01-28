@@ -37,16 +37,8 @@ let PlayerService = class PlayerService {
     async getAllPlayers() {
         return await this.playerDatabaseService.getAllPlayers();
     }
-    async getPlayer(id) {
-        return await this.playerDatabaseService.getPlayer(id);
-    }
-    async deletePlayer(id) {
-        await this.playerDatabaseService.removePlayer(id);
-        this.rankingCacheService.removePlayer(id);
-    }
     async updatePlayer(player) {
         await this.playerDatabaseService.updatePlayer(player);
-        this.rankingCacheService.updatePlayer(player);
     }
 };
 exports.PlayerService = PlayerService;

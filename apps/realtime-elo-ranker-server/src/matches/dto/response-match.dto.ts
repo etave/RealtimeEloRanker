@@ -1,0 +1,7 @@
+import { ResponsePlayerDto } from "src/players/dto/response-player.dto";
+
+export class ResponseMatchDto {
+    winner?: string;
+    loser?: string;
+    draw: boolean;
+}

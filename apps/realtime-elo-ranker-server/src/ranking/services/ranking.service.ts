@@ -3,17 +3,26 @@ import { PlayerDatabaseService } from '../../players/services/player-database.se
 import { RankingCacheService } from './ranking-cache.service';
 import { ResponsePlayerDto } from 'src/players/dto/response-player.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { PlayerService } from 'src/players/services/player.service';
 
 @Injectable()
 export class RankingService implements OnModuleInit {
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly rankingCacheService: RankingCacheService,
-    private readonly playerDatabaseService: PlayerDatabaseService,
+    private readonly playerService: PlayerService,
   ) {
     this.eventEmitter.on('cache.updated', (id: string) => {
-      this.updateRanking(id);
+      this.refreshPlayerRanking(id);
     });
+  }
+
+  public async getPlayer(id: string): Promise<ResponsePlayerDto> {
+    const player = this.rankingCacheService.getPlayer(id);
+    if (player === undefined) {
+      throw new NotFoundException(`Player with id ${id} not found`);
+    }
+    return player;
   }
 
   public getRanking(): ResponsePlayerDto[] {
@@ -24,15 +33,28 @@ export class RankingService implements OnModuleInit {
     return ranking;
   }
 
-  private updateRanking(id: string) {
-    this.eventEmitter.emit(
-      'ranking.update',
-      this.rankingCacheService.getPlayer(id),
-    );
+  public updatePlayerRanking(responsePlayerDto: ResponsePlayerDto) {
+    this.rankingCacheService.updatePlayer(responsePlayerDto);
+    this.playerService.updatePlayer(responsePlayerDto);
+  }
+
+  private refreshPlayerRanking(id: string) {
+    const player = this.rankingCacheService.getPlayer(id);
+
+    if (player === undefined) {
+      this.eventEmitter.emit('ranking.error');
+    
+    }
+    else {
+      this.eventEmitter.emit(
+        'ranking.update',
+        this.rankingCacheService.getPlayer(id),
+      );
+    }
   }
 
   async onModuleInit() {
-    const players = await this.playerDatabaseService.getAllPlayers();
+    const players = await this.playerService.getAllPlayers();
     this.rankingCacheService.initializeCache(players);
   }
 }

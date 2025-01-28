@@ -33,9 +33,17 @@ let RankingController = class RankingController {
             };
             response.write(`data: ${JSON.stringify(event)}\n\n`);
         };
+        const errorListener = () => {
+            const event = {
+                type: ranking_interface_1.RankingEventType.Error,
+            };
+            response.write(`data: ${JSON.stringify(event)}\n\n`);
+        };
         this.eventEmitter.on('ranking.update', listener);
+        this.eventEmitter.on('ranking.error', errorListener);
         response.on('close', () => {
             this.eventEmitter.off('ranking.update', listener);
+            this.eventEmitter.off('ranking.error', errorListener);
             response.end();
         });
     }

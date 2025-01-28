@@ -13,19 +13,4 @@ export class PlayersController {
   ): Promise<ResponsePlayerDto> {
     return await this.playerService.addPlayer(createPlayerDto.id);
   }
-
-  @Get()
-  async getAllPlayers(): Promise<ResponsePlayerDto[]> {
-    return await this.playerService.getAllPlayers();
-  }
-
-  @Get(':id')
-  async getPlayer(@Param('id') id: string): Promise<ResponsePlayerDto | null> {
-    return await this.playerService.getPlayer(id);
-  }
-
-  @Delete(':id')
-  async deletePlayer(@Param('id') id: string): Promise<void> {
-    await this.playerService.deletePlayer(id);
-  }
 }

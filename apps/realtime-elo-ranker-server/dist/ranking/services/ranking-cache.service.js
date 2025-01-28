@@ -25,17 +25,11 @@ let RankingCacheService = RankingCacheService_1 = class RankingCacheService {
         return RankingCacheService_1.singleton;
     }
     getPlayer(id) {
-        const player = this.players.get(id);
-        if (!player) {
-            throw new Error(`Player ${id} not found`);
-        }
-        return player;
+        return this.players.get(id);
     }
     updatePlayer(player) {
         this.players.set(player.id, player);
-    }
-    removePlayer(id) {
-        this.players.delete(id);
+        this.eventEmitter.emit('cache.updated', player.id);
     }
     addPlayer(player) {
         this.players.set(player.id, player);
@@ -57,7 +51,7 @@ let RankingCacheService = RankingCacheService_1 = class RankingCacheService {
         if (totalElo === 0) {
             return 1200;
         }
-        return totalElo / this.players.size;
+        return Math.floor(totalElo / this.players.size);
     }
 };
 exports.RankingCacheService = RankingCacheService;

@@ -20,10 +20,6 @@ export class PlayerDatabaseService {
     await this.playerRepository.save(player);
   }
 
-  async removePlayer(id: string) {
-    await this.playerRepository.delete({ id });
-  }
-
   async addPlayer(player: ResponsePlayerDto) {
     await this.playerRepository.insert(player);
   }

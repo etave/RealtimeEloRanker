@@ -28,9 +28,6 @@ let PlayerDatabaseService = class PlayerDatabaseService {
     async updatePlayer(player) {
         await this.playerRepository.save(player);
     }
-    async removePlayer(id) {
-        await this.playerRepository.delete({ id });
-    }
     async addPlayer(player) {
         await this.playerRepository.insert(player);
     }

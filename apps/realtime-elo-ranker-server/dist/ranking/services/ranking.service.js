@@ -11,17 +11,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingService = void 0;
 const common_1 = require("@nestjs/common");
-const player_database_service_1 = require("../../players/services/player-database.service");
 const ranking_cache_service_1 = require("./ranking-cache.service");
 const event_emitter_1 = require("@nestjs/event-emitter");
+const player_service_1 = require("../../players/services/player.service");
 let RankingService = class RankingService {
-    constructor(eventEmitter, rankingCacheService, playerDatabaseService) {
+    constructor(eventEmitter, rankingCacheService, playerService) {
         this.eventEmitter = eventEmitter;
         this.rankingCacheService = rankingCacheService;
-        this.playerDatabaseService = playerDatabaseService;
+        this.playerService = playerService;
         this.eventEmitter.on('cache.updated', (id) => {
-            this.updateRanking(id);
+            this.refreshPlayerRanking(id);
         });
+    }
+    async getPlayer(id) {
+        const player = this.rankingCacheService.getPlayer(id);
+        if (player === undefined) {
+            throw new common_1.NotFoundException(`Player with id ${id} not found`);
+        }
+        return player;
     }
     getRanking() {
         const ranking = this.rankingCacheService.getPlayers();
@@ -30,11 +37,21 @@ let RankingService = class RankingService {
         }
         return ranking;
     }
-    updateRanking(id) {
-        this.eventEmitter.emit('ranking.update', this.rankingCacheService.getPlayer(id));
+    updatePlayerRanking(responsePlayerDto) {
+        this.rankingCacheService.updatePlayer(responsePlayerDto);
+        this.playerService.updatePlayer(responsePlayerDto);
+    }
+    refreshPlayerRanking(id) {
+        const player = this.rankingCacheService.getPlayer(id);
+        if (player === undefined) {
+            this.eventEmitter.emit('ranking.error');
+        }
+        else {
+            this.eventEmitter.emit('ranking.update', this.rankingCacheService.getPlayer(id));
+        }
     }
     async onModuleInit() {
-        const players = await this.playerDatabaseService.getAllPlayers();
+        const players = await this.playerService.getAllPlayers();
         this.rankingCacheService.initializeCache(players);
     }
 };
@@ -43,6 +60,6 @@ exports.RankingService = RankingService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [event_emitter_1.EventEmitter2,
         ranking_cache_service_1.RankingCacheService,
-        player_database_service_1.PlayerDatabaseService])
+        player_service_1.PlayerService])
 ], RankingService);
 //# sourceMappingURL=ranking.service.js.map

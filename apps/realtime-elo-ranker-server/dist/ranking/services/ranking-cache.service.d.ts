@@ -6,9 +6,8 @@ export declare class RankingCacheService {
     private readonly players;
     private constructor();
     static getInstance(eventEmitter: EventEmitter2): RankingCacheService;
-    getPlayer(id: string): ResponsePlayerDto;
+    getPlayer(id: string): ResponsePlayerDto | undefined;
     updatePlayer(player: ResponsePlayerDto): void;
-    removePlayer(id: string): void;
     addPlayer(player: ResponsePlayerDto): void;
     initializeCache(players: ResponsePlayerDto[]): void;
     clearCache(): void;

@@ -7,7 +7,5 @@ export declare class PlayerService {
     constructor(rankingCacheService: RankingCacheService, playerDatabaseService: PlayerDatabaseService);
     addPlayer(id: string): Promise<ResponsePlayerDto>;
     getAllPlayers(): Promise<ResponsePlayerDto[]>;
-    getPlayer(id: string): Promise<ResponsePlayerDto | null>;
-    deletePlayer(id: string): Promise<void>;
     updatePlayer(player: ResponsePlayerDto): Promise<void>;
 }

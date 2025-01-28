@@ -18,20 +18,13 @@ export class RankingCacheService {
     return RankingCacheService.singleton;
   }
 
-  public getPlayer(id: string): ResponsePlayerDto {
-    const player = this.players.get(id);
-    if (!player) {
-      throw new Error(`Player ${id} not found`);
-    }
-    return player;
+  public getPlayer(id: string): ResponsePlayerDto | undefined {
+    return this.players.get(id);
   }
 
   public updatePlayer(player: ResponsePlayerDto) {
     this.players.set(player.id, player);
-  }
-
-  public removePlayer(id: string) {
-    this.players.delete(id);
+    this.eventEmitter.emit('cache.updated', player.id);
   }
 
   public addPlayer(player: ResponsePlayerDto) {
@@ -62,6 +55,6 @@ export class RankingCacheService {
     if (totalElo === 0) {
       return 1200;
     }
-    return totalElo / this.players.size;
+    return Math.floor(totalElo / this.players.size);
   }
 }

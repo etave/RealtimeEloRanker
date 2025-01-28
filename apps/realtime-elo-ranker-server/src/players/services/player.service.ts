@@ -39,17 +39,7 @@ export class PlayerService {
     return await this.playerDatabaseService.getAllPlayers();
   }
 
-  public async getPlayer(id: string): Promise<ResponsePlayerDto | null> {
-    return await this.playerDatabaseService.getPlayer(id);
-  }
-
-  public async deletePlayer(id: string): Promise<void> {
-    await this.playerDatabaseService.removePlayer(id);
-    this.rankingCacheService.removePlayer(id);
-  }
-
   public async updatePlayer(player: ResponsePlayerDto): Promise<void> {
     await this.playerDatabaseService.updatePlayer(player);
-    this.rankingCacheService.updatePlayer(player);
   }
 }

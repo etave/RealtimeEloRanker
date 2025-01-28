@@ -6,7 +6,6 @@ export declare class PlayerDatabaseService {
     constructor(playerRepository: Repository<PlayerEntity>);
     getPlayer(id: string): Promise<ResponsePlayerDto | null>;
     updatePlayer(player: ResponsePlayerDto): Promise<void>;
-    removePlayer(id: string): Promise<void>;
     addPlayer(player: ResponsePlayerDto): Promise<void>;
     getAllPlayers(): Promise<ResponsePlayerDto[]>;
 }

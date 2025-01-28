@@ -8,15 +8,32 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchesController = void 0;
 const common_1 = require("@nestjs/common");
+const matches_service_1 = require("../services/matches.service");
+const response_match_dto_1 = require("../dto/response-match.dto");
 let MatchesController = class MatchesController {
-    constructor() { }
+    constructor(matchesService) {
+        this.matchesService = matchesService;
+    }
+    processMatch(responseMatchDto) {
+        this.matchesService.processMatch(responseMatchDto);
+    }
 };
 exports.MatchesController = MatchesController;
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [response_match_dto_1.ResponseMatchDto]),
+    __metadata("design:returntype", void 0)
+], MatchesController.prototype, "processMatch", null);
 exports.MatchesController = MatchesController = __decorate([
-    (0, common_1.Controller)('matches'),
-    __metadata("design:paramtypes", [])
+    (0, common_1.Controller)('match'),
+    __metadata("design:paramtypes", [matches_service_1.MatchesService])
 ], MatchesController);
 //# sourceMappingURL=matches.controller.js.map

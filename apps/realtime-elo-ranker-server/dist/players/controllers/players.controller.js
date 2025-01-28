@@ -23,15 +23,6 @@ let PlayersController = class PlayersController {
     async createPlayer(createPlayerDto) {
         return await this.playerService.addPlayer(createPlayerDto.id);
     }
-    async getAllPlayers() {
-        return await this.playerService.getAllPlayers();
-    }
-    async getPlayer(id) {
-        return await this.playerService.getPlayer(id);
-    }
-    async deletePlayer(id) {
-        await this.playerService.deletePlayer(id);
-    }
 };
 exports.PlayersController = PlayersController;
 __decorate([
@@ -41,26 +32,6 @@ __decorate([
     __metadata("design:paramtypes", [create_player_dto_1.CreatePlayerDto]),
     __metadata("design:returntype", Promise)
 ], PlayersController.prototype, "createPlayer", null);
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PlayersController.prototype, "getAllPlayers", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PlayersController.prototype, "getPlayer", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PlayersController.prototype, "deletePlayer", null);
 exports.PlayersController = PlayersController = __decorate([
     (0, common_1.Controller)('player'),
     __metadata("design:paramtypes", [player_service_1.PlayerService])
