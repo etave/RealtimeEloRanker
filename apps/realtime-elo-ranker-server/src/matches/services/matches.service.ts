@@ -8,7 +8,6 @@ export class MatchesService {
   constructor(private rankingService: RankingService) {}
 
   public async processMatch(responseMatchDto: ResponseMatchDto) {
-
     if (responseMatchDto.draw) {
       return;
     }
@@ -16,14 +15,21 @@ export class MatchesService {
     if (!responseMatchDto.winner || !responseMatchDto.loser) {
       throw new UnprocessableEntityException('Winner or loser not provided');
     }
-    
+
     const winner = await this.rankingService.getPlayer(responseMatchDto.winner);
     const loser = await this.rankingService.getPlayer(responseMatchDto.loser);
     this.processRankingUpdate(winner, loser);
   }
 
-  private processRankingUpdate(winner: ResponsePlayerDto, loser: ResponsePlayerDto) {
-    const [newWinnerRank, newLoserRank] = this.calculateNewRanks(winner, loser, false);
+  private processRankingUpdate(
+    winner: ResponsePlayerDto,
+    loser: ResponsePlayerDto,
+  ) {
+    const [newWinnerRank, newLoserRank] = this.calculateNewRanks(
+      winner,
+      loser,
+      false,
+    );
     winner.rank = Math.floor(newWinnerRank);
     loser.rank = Math.floor(newLoserRank);
     this.rankingService.updatePlayerRanking(winner);
@@ -31,12 +37,10 @@ export class MatchesService {
   }
 
   private calculateVictoryProbabilities(
-    winner: ResponsePlayerDto,
-    loser: ResponsePlayerDto,
-  ): [number, number] {
-    const WHe = 1 / (1 + Math.pow(10, (winner.rank - loser.rank) / 400));
-    const WLe = 1 - WHe;
-    return [WHe, WLe];
+    playerRating: number,
+    opponentRating: number,
+  ): number {
+    return 1 / (1 + Math.pow(10, (opponentRating - playerRating) / 400));
   }
 
   private calculateNewRanks(
@@ -45,12 +49,28 @@ export class MatchesService {
     draw: boolean,
   ): [number, number] {
     const K = 32;
-    const [WHe, WLe] = this.calculateVictoryProbabilities(winner, loser);
-    const WW = draw ? 0.5 : 1;
-    const WL = draw ? 0.5 : 0;
 
-    const newWinnerRank = winner.rank + K * (WW - WHe);
-    const newLoserRank = loser.rank + K * (WL - WLe);
+    const expectedWinner = this.calculateVictoryProbabilities(
+      winner.rank,
+      loser.rank,
+    );
+    const expectedLoser = this.calculateVictoryProbabilities(
+      loser.rank,
+      winner.rank,
+    );
+
+    const actualWinner = draw ? 0.5 : 1.0;
+    const actualLoser = draw ? 0.5 : 0.0;
+
+    let newWinnerRank = Math.round(
+      winner.rank + K * (actualWinner - expectedWinner),
+    );
+    let newLoserRank = Math.round(
+      loser.rank + K * (actualLoser - expectedLoser),
+    );
+
+    newWinnerRank = Math.max(0, newWinnerRank);
+    newLoserRank = Math.max(0, newLoserRank);
 
     return [newWinnerRank, newLoserRank];
   }

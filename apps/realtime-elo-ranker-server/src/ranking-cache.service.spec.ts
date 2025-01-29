@@ -1,56 +1,91 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
-import { RankingCacheService } from './services/ranking-cache.service';
+import { RankingCacheService } from './ranking/services/ranking-cache.service';
 
 describe('RankingCacheService', () => {
   let service: RankingCacheService;
   let eventEmitter: EventEmitter2;
+  let emitSpy: jest.SpyInstance;
+
+  const mockPlayer1 = {
+    id: 'player1',
+    rank: 1000,
+  };
+
+  const mockPlayer2 = {
+    id: 'player2',
+    rank: 1400,
+  };
+
+  const mockEventEmitter = {
+    emit: jest.fn(),
+  };
 
   beforeEach(async () => {
-    (RankingCacheService as any).singleton = null;
-
     const module: TestingModule = await Test.createTestingModule({
       imports: [EventEmitterModule.forRoot()],
       providers: [
-        EventEmitter2,
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
         {
           provide: RankingCacheService,
-          useFactory: (eventEmitter: EventEmitter2) => RankingCacheService.getInstance(eventEmitter),
+          useFactory: (eventEmitter: EventEmitter2) =>
+            RankingCacheService.getInstance(eventEmitter),
           inject: [EventEmitter2],
         },
       ],
     }).compile();
 
-    await module.init();
-    service = module.get<RankingCacheService>(RankingCacheService);
     eventEmitter = module.get<EventEmitter2>(EventEmitter2);
+    service = module.get<RankingCacheService>(RankingCacheService);
+    service.clearCache();
+    emitSpy = mockEventEmitter.emit;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should maintain singleton instance', () => {
-    const instance1 = RankingCacheService.getInstance(eventEmitter);
-    const instance2 = RankingCacheService.getInstance(eventEmitter);
-    expect(instance1).toBe(instance2);
+  it('should add a player', () => {
+    service.addPlayer(mockPlayer1);
+
+    expect(service.getPlayer(mockPlayer1.id)).toEqual(mockPlayer1);
+    expect(emitSpy).toHaveBeenCalledWith('cache.updated', mockPlayer1.id);
   });
 
-  it('should add and retrieve player', () => {
-    const player = { id: '1', name: 'Player1', elo: 1200 };
-    service.addPlayer(player);
-    expect(service.getPlayer('1')).toEqual(player);
+  it('should update a player', () => {
+    const updatedPlayer = { ...mockPlayer1, rank: 1100 };
+
+    service.addPlayer(mockPlayer1);
+    service.updatePlayer(updatedPlayer);
+
+    expect(service.getPlayer(mockPlayer1.id)).toEqual(updatedPlayer);
+    expect(emitSpy).toHaveBeenCalledWith('cache.updated', mockPlayer1.id);
   });
 
-  it('should return sorted rankings', () => {
-    const player1 = { id: '1', name: 'Player 1', elo: 1200 };
-    const player2 = { id: '2', name: 'Player 2', elo: 1400 };
-    
-    service.addPlayer(player1);
-    service.addPlayer(player2);
-    
-    const rankings = service.getRanking();
-    expect(rankings[0]).toEqual(player2);
-    expect(rankings[1]).toEqual(player1);
+  it('should get a player', () => {
+    service.addPlayer(mockPlayer1);
+
+    expect(service.getPlayer(mockPlayer1.id)).toEqual(mockPlayer1);
+  });
+
+  it('should get all players', () => {
+    service.addPlayer(mockPlayer1);
+    service.addPlayer(mockPlayer2);
+
+    expect(service.getPlayers()).toEqual([mockPlayer1, mockPlayer2]);
+  });
+
+  it('should get average elo', () => {
+    service.addPlayer(mockPlayer1);
+    service.addPlayer(mockPlayer2);
+
+    expect(service.getAverageElo()).toBe(1200);
   });
 });

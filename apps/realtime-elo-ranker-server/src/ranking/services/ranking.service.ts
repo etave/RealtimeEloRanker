@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
-import { PlayerDatabaseService } from '../../players/services/player-database.service';
 import { RankingCacheService } from './ranking-cache.service';
 import { ResponsePlayerDto } from 'src/players/dto/response-player.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PlayerService } from 'src/players/services/player.service';
+import { PlayerService } from '../../players/services/player.service';
 
 @Injectable()
 export class RankingService implements OnModuleInit {
@@ -43,9 +42,7 @@ export class RankingService implements OnModuleInit {
 
     if (player === undefined) {
       this.eventEmitter.emit('ranking.error');
-    
-    }
-    else {
+    } else {
       this.eventEmitter.emit(
         'ranking.update',
         this.rankingCacheService.getPlayer(id),

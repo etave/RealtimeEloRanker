@@ -34,18 +34,19 @@ let MatchesService = class MatchesService {
         this.rankingService.updatePlayerRanking(winner);
         this.rankingService.updatePlayerRanking(loser);
     }
-    calculateVictoryProbabilities(winner, loser) {
-        const WHe = 1 / (1 + Math.pow(10, (winner.rank - loser.rank) / 400));
-        const WLe = 1 - WHe;
-        return [WHe, WLe];
+    calculateVictoryProbabilities(playerRating, opponentRating) {
+        return 1 / (1 + Math.pow(10, (opponentRating - playerRating) / 400));
     }
     calculateNewRanks(winner, loser, draw) {
         const K = 32;
-        const [WHe, WLe] = this.calculateVictoryProbabilities(winner, loser);
-        const WW = draw ? 0.5 : 1;
-        const WL = draw ? 0.5 : 0;
-        const newWinnerRank = winner.rank + K * (WW - WHe);
-        const newLoserRank = loser.rank + K * (WL - WLe);
+        const expectedWinner = this.calculateVictoryProbabilities(winner.rank, loser.rank);
+        const expectedLoser = this.calculateVictoryProbabilities(loser.rank, winner.rank);
+        const actualWinner = draw ? 0.5 : 1.0;
+        const actualLoser = draw ? 0.5 : 0.0;
+        let newWinnerRank = Math.round(winner.rank + K * (actualWinner - expectedWinner));
+        let newLoserRank = Math.round(loser.rank + K * (actualLoser - expectedLoser));
+        newWinnerRank = Math.max(0, newWinnerRank);
+        newLoserRank = Math.max(0, newLoserRank);
         return [newWinnerRank, newLoserRank];
     }
 };

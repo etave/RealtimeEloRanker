@@ -2,7 +2,7 @@ import { OnModuleInit } from '@nestjs/common';
 import { RankingCacheService } from './ranking-cache.service';
 import { ResponsePlayerDto } from 'src/players/dto/response-player.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PlayerService } from 'src/players/services/player.service';
+import { PlayerService } from '../../players/services/player.service';
 export declare class RankingService implements OnModuleInit {
     private readonly eventEmitter;
     private readonly rankingCacheService;
