@@ -1,6 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Post, Get, Controller, Res, Header, Sse } from '@nestjs/common';
 import { MatchesService } from '../services/matches.service';
 import { ResponseMatchDto } from '../dto/response-match.dto';
+import { Response } from 'express';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller('match')
 export class MatchesController {
@@ -9,5 +11,35 @@ export class MatchesController {
   @Post()
   processMatch(@Body() responseMatchDto: ResponseMatchDto): void {
     this.matchesService.processMatch(responseMatchDto);
+  }
+}
+
+@Controller('match/history')
+export class MatchHistoryController {
+  constructor(
+    private readonly matchesService: MatchesService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
+
+  @Get()
+  getMatchHistory(): ResponseMatchDto[] {
+    return this.matchesService.getMatchHistory();
+  }
+
+  @Get('events')
+  @Header('Content-Type', 'text/event-stream')
+  @Header('Cache-Control', 'no-cache')
+  @Header('Connection', 'keep-alive')
+  getEvents(@Res() response: Response) {
+    const listener = (match: ResponseMatchDto) => {
+      response.write(`data: ${JSON.stringify(match)}\n\n`);
+    };
+
+    this.eventEmitter.on('matches.update', listener);
+
+    response.on('close', () => {
+      this.eventEmitter.off('matches.update', listener);
+      response.end();
+    });
   }
 }

@@ -52,6 +52,7 @@ let RankingService = class RankingService {
     }
     async onModuleInit() {
         const players = await this.playerService.getAllPlayers();
+        players.sort((a, b) => b.rank - a.rank);
         this.rankingCacheService.initializeCache(players);
     }
 };

@@ -12,10 +12,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MatchesController = void 0;
+exports.MatchHistoryController = exports.MatchesController = void 0;
 const common_1 = require("@nestjs/common");
 const matches_service_1 = require("../services/matches.service");
 const response_match_dto_1 = require("../dto/response-match.dto");
+const event_emitter_1 = require("@nestjs/event-emitter");
 let MatchesController = class MatchesController {
     constructor(matchesService) {
         this.matchesService = matchesService;
@@ -36,4 +37,45 @@ exports.MatchesController = MatchesController = __decorate([
     (0, common_1.Controller)('match'),
     __metadata("design:paramtypes", [matches_service_1.MatchesService])
 ], MatchesController);
+let MatchHistoryController = class MatchHistoryController {
+    constructor(matchesService, eventEmitter) {
+        this.matchesService = matchesService;
+        this.eventEmitter = eventEmitter;
+    }
+    getMatchHistory() {
+        return this.matchesService.getMatchHistory();
+    }
+    getEvents(response) {
+        const listener = (match) => {
+            response.write(`data: ${JSON.stringify(match)}\n\n`);
+        };
+        this.eventEmitter.on('matches.update', listener);
+        response.on('close', () => {
+            this.eventEmitter.off('matches.update', listener);
+            response.end();
+        });
+    }
+};
+exports.MatchHistoryController = MatchHistoryController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Array)
+], MatchHistoryController.prototype, "getMatchHistory", null);
+__decorate([
+    (0, common_1.Get)('events'),
+    (0, common_1.Header)('Content-Type', 'text/event-stream'),
+    (0, common_1.Header)('Cache-Control', 'no-cache'),
+    (0, common_1.Header)('Connection', 'keep-alive'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], MatchHistoryController.prototype, "getEvents", null);
+exports.MatchHistoryController = MatchHistoryController = __decorate([
+    (0, common_1.Controller)('match/history'),
+    __metadata("design:paramtypes", [matches_service_1.MatchesService,
+        event_emitter_1.EventEmitter2])
+], MatchHistoryController);
 //# sourceMappingURL=matches.controller.js.map

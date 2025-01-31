@@ -19,6 +19,8 @@ const matches_service_1 = require("./matches/services/matches.service");
 const ranking_service_1 = require("./ranking/services/ranking.service");
 const ranking_cache_service_1 = require("./ranking/services/ranking-cache.service");
 const player_entity_1 = require("./players/entities/player.entity");
+const matches_database_service_1 = require("./matches/services/matches-database.service");
+const match_entity_1 = require("./matches/entities/match.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -29,17 +31,23 @@ exports.AppModule = AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'sqlite',
                 database: 'db.sqlite',
-                entities: [player_entity_1.PlayerEntity],
+                entities: [player_entity_1.PlayerEntity, match_entity_1.MatchEntity],
                 synchronize: true,
                 autoLoadEntities: true,
             }),
-            typeorm_1.TypeOrmModule.forFeature([player_entity_1.PlayerEntity]),
+            typeorm_1.TypeOrmModule.forFeature([player_entity_1.PlayerEntity, match_entity_1.MatchEntity]),
         ],
-        controllers: [players_controller_1.PlayersController, matches_controller_1.MatchesController, ranking_controller_1.RankingController],
+        controllers: [
+            players_controller_1.PlayersController,
+            matches_controller_1.MatchesController,
+            matches_controller_1.MatchHistoryController,
+            ranking_controller_1.RankingController,
+        ],
         providers: [
             player_service_1.PlayerService,
             player_database_service_1.PlayerDatabaseService,
             matches_service_1.MatchesService,
+            matches_database_service_1.MatchesDatabaseService,
             ranking_service_1.RankingService,
             {
                 provide: ranking_cache_service_1.RankingCacheService,

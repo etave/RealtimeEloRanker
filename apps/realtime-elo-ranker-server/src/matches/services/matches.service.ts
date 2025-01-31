@@ -1,11 +1,23 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  UnprocessableEntityException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ResponseMatchDto } from '../dto/response-match.dto';
 import { RankingService } from '../../ranking/services/ranking.service';
 import { ResponsePlayerDto } from 'src/players/dto/response-player.dto';
+import { MatchesDatabaseService } from './matches-database.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
-export class MatchesService {
-  constructor(private rankingService: RankingService) {}
+export class MatchesService implements OnModuleInit {
+  private matchHistory: ResponseMatchDto[] = [];
+
+  constructor(
+    private eventEmitter: EventEmitter2,
+    private rankingService: RankingService,
+    private matchesDatabaseService: MatchesDatabaseService,
+  ) {}
 
   public async processMatch(responseMatchDto: ResponseMatchDto) {
     if (responseMatchDto.draw) {
@@ -19,6 +31,9 @@ export class MatchesService {
     const winner = await this.rankingService.getPlayer(responseMatchDto.winner);
     const loser = await this.rankingService.getPlayer(responseMatchDto.loser);
     this.processRankingUpdate(winner, loser);
+    this.matchHistory.push(responseMatchDto);
+    await this.matchesDatabaseService.addMatch(responseMatchDto);
+    this.refreshMatchHistory(responseMatchDto);
   }
 
   private processRankingUpdate(
@@ -73,5 +88,19 @@ export class MatchesService {
     newLoserRank = Math.max(0, newLoserRank);
 
     return [newWinnerRank, newLoserRank];
+  }
+
+  public getMatchHistory(): ResponseMatchDto[] {
+    return this.matchHistory.slice(-10);
+  }
+
+  private refreshMatchHistory(responseMatchDto: ResponseMatchDto) {
+    console.log('refreshing match history');
+    this.eventEmitter.emit('matches.update', responseMatchDto);
+  }
+
+  async onModuleInit() {
+    const matches = await this.matchesDatabaseService.getMatchHistory();
+    this.matchHistory = matches;
   }
 }

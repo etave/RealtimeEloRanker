@@ -12,9 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchesService = void 0;
 const common_1 = require("@nestjs/common");
 const ranking_service_1 = require("../../ranking/services/ranking.service");
+const matches_database_service_1 = require("./matches-database.service");
+const event_emitter_1 = require("@nestjs/event-emitter");
 let MatchesService = class MatchesService {
-    constructor(rankingService) {
+    constructor(eventEmitter, rankingService, matchesDatabaseService) {
+        this.eventEmitter = eventEmitter;
         this.rankingService = rankingService;
+        this.matchesDatabaseService = matchesDatabaseService;
+        this.matchHistory = [];
     }
     async processMatch(responseMatchDto) {
         if (responseMatchDto.draw) {
@@ -26,6 +31,9 @@ let MatchesService = class MatchesService {
         const winner = await this.rankingService.getPlayer(responseMatchDto.winner);
         const loser = await this.rankingService.getPlayer(responseMatchDto.loser);
         this.processRankingUpdate(winner, loser);
+        this.matchHistory.push(responseMatchDto);
+        await this.matchesDatabaseService.addMatch(responseMatchDto);
+        this.refreshMatchHistory(responseMatchDto);
     }
     processRankingUpdate(winner, loser) {
         const [newWinnerRank, newLoserRank] = this.calculateNewRanks(winner, loser, false);
@@ -49,10 +57,23 @@ let MatchesService = class MatchesService {
         newLoserRank = Math.max(0, newLoserRank);
         return [newWinnerRank, newLoserRank];
     }
+    getMatchHistory() {
+        return this.matchHistory.slice(-10);
+    }
+    refreshMatchHistory(responseMatchDto) {
+        console.log('refreshing match history');
+        this.eventEmitter.emit('matches.update', responseMatchDto);
+    }
+    async onModuleInit() {
+        const matches = await this.matchesDatabaseService.getMatchHistory();
+        this.matchHistory = matches;
+    }
 };
 exports.MatchesService = MatchesService;
 exports.MatchesService = MatchesService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [ranking_service_1.RankingService])
+    __metadata("design:paramtypes", [event_emitter_1.EventEmitter2,
+        ranking_service_1.RankingService,
+        matches_database_service_1.MatchesDatabaseService])
 ], MatchesService);
 //# sourceMappingURL=matches.service.js.map
