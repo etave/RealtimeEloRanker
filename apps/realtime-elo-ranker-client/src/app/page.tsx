@@ -17,6 +17,8 @@ import {
 import { motion } from "motion/react";
 import postMatchResult from "../services/match/post-match-result";
 import postPlayer from "../services/player/post-player";
+import fetchMatchHistory from "../services/match/fetch-match-history";
+import subscribeMatchEvents from "../services/match/subscribe-match-events";
 
 const poppinsBold = Poppins({
   weight: "600",
@@ -67,6 +69,7 @@ export default function Home() {
   }
 
   const [ladderData, setLadderData] = useState<PlayerData[]>([]);
+  const [matchHistory, setMatchHistory] = useState<{winner: string | undefined; loser: string | undefined;}[]>([]);
 
   const updateLadderData = useCallback((player: PlayerData) => {
     setLadderData((prevData) => {
@@ -79,11 +82,13 @@ export default function Home() {
   useEffect(() => {
     try {
       fetchRanking(API_BASE_URL).then(setLadderData);
+      fetchMatchHistory(API_BASE_URL).then(setMatchHistory);
     } catch (error) {
       // TODO: toast error
       console.error(error);
     }
     const eventSource = subscribeRankingEvents(API_BASE_URL);
+    const matchEventSource = subscribeMatchEvents(API_BASE_URL);
     eventSource.onmessage = (msg: MessageEvent) => {
       const event: RankingEvent = JSON.parse(msg.data);
       if (event.type === "Error") {
@@ -99,7 +104,14 @@ export default function Home() {
       console.error(err);
       eventSource.close();
     };
-    return () => eventSource.close();
+    matchEventSource.onmessage = (msg: MessageEvent) => {
+      const event = JSON.parse(msg.data);
+      console.log(event);
+    };
+    return () => {
+      eventSource.close();
+      matchEventSource.close();
+    }
   }, [API_BASE_URL, updateLadderData]);
 
   return (
@@ -114,11 +126,38 @@ export default function Home() {
         >
           Realtime Elo Ranker
         </h1>
-        <div className="w-full h-[610px] w-[95%]">
-          <h2 className={`${poppinsSemiBold.className} text-2xl`}>
-            Classement des joueurs
-          </h2>
-          <RankingLadder data={ladderData} />
+        <div className="flex gap-8">
+          <div className="flex flex-col w-[75%] h-[400px]">
+            <h2 className={`${poppinsSemiBold.className} text-2xl`}>
+              Classement des joueurs
+            </h2>
+            <RankingLadder data={ladderData} />
+          </div>
+          <div className="flex flex-col w-[20%]">
+            <h2 className={`${poppinsSemiBold.className} text-2xl mb-4`}>
+              10 derniers matchs non nuls
+            </h2>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="border border-black">Gagnant</th>
+                  <th className="border border-black">Perdant</th>
+                </tr>
+              </thead>
+              <tbody>
+                {matchHistory.map((match, index) => (
+                  <tr key={index}>
+                    <td className="border border-black">
+                      {match.winner ?? "Inconnu"}
+                    </td>
+                    <td className="border border-black">
+                      {match.loser ?? "Inconnu"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div className="flex mt-10 gap-12">
           <div className="flex flex-col gap-4">
