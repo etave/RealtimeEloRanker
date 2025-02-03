@@ -23,7 +23,7 @@ const RankingLadder: FC<RankingLadderProps> = (props) => {
   return (
     <div data-testid="RankingLadder" className="h-full">
       <AnimatePresence>
-        <div className="pt-4 columns-8 gap-4 overflow-x-auto max-h-full themed-scrollbar">
+        <div className="pt-4 columns-5 gap-4 overflow-x-auto max-h-full themed-scrollbar">
           {data.map((player) => (
             <motion.div
               key={player.id}

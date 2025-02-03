@@ -22,21 +22,20 @@ let MatchesService = class MatchesService {
         this.matchHistory = [];
     }
     async processMatch(responseMatchDto) {
-        if (responseMatchDto.draw) {
-            return;
-        }
         if (!responseMatchDto.winner || !responseMatchDto.loser) {
             throw new common_1.UnprocessableEntityException('Winner or loser not provided');
         }
         const winner = await this.rankingService.getPlayer(responseMatchDto.winner);
         const loser = await this.rankingService.getPlayer(responseMatchDto.loser);
-        this.processRankingUpdate(winner, loser);
-        this.matchHistory.push(responseMatchDto);
-        await this.matchesDatabaseService.addMatch(responseMatchDto);
+        this.processRankingUpdate(winner, loser, responseMatchDto.draw);
+        if (responseMatchDto.draw !== true) {
+            this.matchesDatabaseService.addMatch(responseMatchDto);
+            this.matchHistory.push(responseMatchDto);
+        }
         this.refreshMatchHistory(responseMatchDto);
     }
-    processRankingUpdate(winner, loser) {
-        const [newWinnerRank, newLoserRank] = this.calculateNewRanks(winner, loser, false);
+    processRankingUpdate(winner, loser, draw) {
+        const [newWinnerRank, newLoserRank] = this.calculateNewRanks(winner, loser, draw);
         winner.rank = Math.floor(newWinnerRank);
         loser.rank = Math.floor(newLoserRank);
         this.rankingService.updatePlayerRanking(winner);
@@ -61,12 +60,12 @@ let MatchesService = class MatchesService {
         return this.matchHistory.slice(-10);
     }
     refreshMatchHistory(responseMatchDto) {
-        console.log('refreshing match history');
         this.eventEmitter.emit('matches.update', responseMatchDto);
     }
     async onModuleInit() {
-        const matches = await this.matchesDatabaseService.getMatchHistory();
-        this.matchHistory = matches;
+        this.matchesDatabaseService.getMatchHistory().then((matches) => {
+            this.matchHistory = matches;
+        });
     }
 };
 exports.MatchesService = MatchesService;

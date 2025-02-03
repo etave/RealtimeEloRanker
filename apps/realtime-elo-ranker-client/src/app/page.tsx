@@ -106,7 +106,10 @@ export default function Home() {
     };
     matchEventSource.onmessage = (msg: MessageEvent) => {
       const event = JSON.parse(msg.data);
-      console.log(event);
+      setMatchHistory((prevHistory) => {
+        const updatedHistory = [...prevHistory, event];
+        return updatedHistory.length > 10 ? updatedHistory.slice(-10) : updatedHistory;
+      });
     };
     return () => {
       eventSource.close();
@@ -126,8 +129,8 @@ export default function Home() {
         >
           Realtime Elo Ranker
         </h1>
-        <div className="flex gap-8">
-          <div className="flex flex-col w-[75%] h-[400px]">
+        <div className="flex gap-16">
+          <div className="flex flex-col w-[80%] h-[400px]">
             <h2 className={`${poppinsSemiBold.className} text-2xl`}>
               Classement des joueurs
             </h2>

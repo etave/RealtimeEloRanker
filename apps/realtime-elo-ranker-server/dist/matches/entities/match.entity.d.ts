@@ -1,6 +1,6 @@
 export declare class MatchEntity {
     id: string;
-    winner: string | undefined;
-    loser: string | undefined;
+    winner: string;
+    loser: string;
     draw: boolean;
 }

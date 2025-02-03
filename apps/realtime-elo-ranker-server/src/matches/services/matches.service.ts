@@ -20,30 +20,29 @@ export class MatchesService implements OnModuleInit {
   ) {}
 
   public async processMatch(responseMatchDto: ResponseMatchDto) {
-    if (responseMatchDto.draw) {
-      return;
-    }
-
     if (!responseMatchDto.winner || !responseMatchDto.loser) {
       throw new UnprocessableEntityException('Winner or loser not provided');
     }
 
     const winner = await this.rankingService.getPlayer(responseMatchDto.winner);
     const loser = await this.rankingService.getPlayer(responseMatchDto.loser);
-    this.processRankingUpdate(winner, loser);
-    this.matchHistory.push(responseMatchDto);
-    await this.matchesDatabaseService.addMatch(responseMatchDto);
+    this.processRankingUpdate(winner, loser, responseMatchDto.draw);
+    if (responseMatchDto.draw !== true) {
+      this.matchesDatabaseService.addMatch(responseMatchDto);
+      this.matchHistory.push(responseMatchDto);
+    }
     this.refreshMatchHistory(responseMatchDto);
   }
 
   private processRankingUpdate(
     winner: ResponsePlayerDto,
     loser: ResponsePlayerDto,
+    draw: boolean,
   ) {
     const [newWinnerRank, newLoserRank] = this.calculateNewRanks(
       winner,
       loser,
-      false,
+      draw,
     );
     winner.rank = Math.floor(newWinnerRank);
     loser.rank = Math.floor(newLoserRank);
@@ -95,12 +94,12 @@ export class MatchesService implements OnModuleInit {
   }
 
   private refreshMatchHistory(responseMatchDto: ResponseMatchDto) {
-    console.log('refreshing match history');
     this.eventEmitter.emit('matches.update', responseMatchDto);
   }
 
   async onModuleInit() {
-    const matches = await this.matchesDatabaseService.getMatchHistory();
-    this.matchHistory = matches;
+    this.matchesDatabaseService.getMatchHistory().then((matches) => {
+      this.matchHistory = matches;
+    });
   }
 }

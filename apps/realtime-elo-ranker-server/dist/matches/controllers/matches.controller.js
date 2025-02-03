@@ -21,8 +21,8 @@ let MatchesController = class MatchesController {
     constructor(matchesService) {
         this.matchesService = matchesService;
     }
-    processMatch(responseMatchDto) {
-        this.matchesService.processMatch(responseMatchDto);
+    async processMatch(responseMatchDto) {
+        await this.matchesService.processMatch(responseMatchDto);
     }
 };
 exports.MatchesController = MatchesController;
@@ -31,7 +31,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [response_match_dto_1.ResponseMatchDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], MatchesController.prototype, "processMatch", null);
 exports.MatchesController = MatchesController = __decorate([
     (0, common_1.Controller)('match'),

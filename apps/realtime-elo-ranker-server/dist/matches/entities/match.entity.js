@@ -20,11 +20,11 @@ __decorate([
 ], MatchEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)('text'),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], MatchEntity.prototype, "winner", void 0);
 __decorate([
     (0, typeorm_1.Column)('text'),
-    __metadata("design:type", Object)
+    __metadata("design:type", String)
 ], MatchEntity.prototype, "loser", void 0);
 __decorate([
     (0, typeorm_1.Column)('boolean'),

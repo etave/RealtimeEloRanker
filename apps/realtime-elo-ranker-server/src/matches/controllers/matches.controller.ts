@@ -1,16 +1,27 @@
-import { Body, Post, Get, Controller, Res, Header, Sse } from '@nestjs/common';
+import {
+  Body,
+  Post,
+  Get,
+  Controller,
+  Res,
+  Header,
+  UseFilters,
+} from '@nestjs/common';
 import { MatchesService } from '../services/matches.service';
 import { ResponseMatchDto } from '../dto/response-match.dto';
 import { Response } from 'express';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { HttpExceptionFilter } from '../../common/filters/http-exeception.filter';
 
 @Controller('match')
 export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
 
   @Post()
-  processMatch(@Body() responseMatchDto: ResponseMatchDto): void {
-    this.matchesService.processMatch(responseMatchDto);
+  async processMatch(
+    @Body() responseMatchDto: ResponseMatchDto,
+  ): Promise<void> {
+    await this.matchesService.processMatch(responseMatchDto);
   }
 }
 

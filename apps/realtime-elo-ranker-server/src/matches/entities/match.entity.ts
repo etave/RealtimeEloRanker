@@ -6,10 +6,10 @@ export class MatchEntity {
   id: string;
 
   @Column('text')
-  winner: string | undefined;
+  winner: string;
 
   @Column('text')
-  loser: string | undefined;
+  loser: string;
 
   @Column('boolean')
   draw: boolean;
