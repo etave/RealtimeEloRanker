@@ -31,8 +31,8 @@ let MatchesService = class MatchesService {
         if (responseMatchDto.draw !== true) {
             this.matchesDatabaseService.addMatch(responseMatchDto);
             this.matchHistory.push(responseMatchDto);
+            this.refreshMatchHistory(responseMatchDto);
         }
-        this.refreshMatchHistory(responseMatchDto);
     }
     processRankingUpdate(winner, loser, draw) {
         const [newWinnerRank, newLoserRank] = this.calculateNewRanks(winner, loser, draw);

@@ -30,8 +30,8 @@ export class MatchesService implements OnModuleInit {
     if (responseMatchDto.draw !== true) {
       this.matchesDatabaseService.addMatch(responseMatchDto);
       this.matchHistory.push(responseMatchDto);
+      this.refreshMatchHistory(responseMatchDto);
     }
-    this.refreshMatchHistory(responseMatchDto);
   }
 
   private processRankingUpdate(

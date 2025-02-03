@@ -129,14 +129,14 @@ export default function Home() {
         >
           Realtime Elo Ranker
         </h1>
-        <div className="flex gap-16">
-          <div className="flex flex-col w-[80%] h-[400px]">
+        <div className="flex gap-32">
+          <div className="flex flex-col w-[100%] h-[400px]">
             <h2 className={`${poppinsSemiBold.className} text-2xl`}>
               Classement des joueurs
             </h2>
             <RankingLadder data={ladderData} />
           </div>
-          <div className="flex flex-col w-[20%]">
+          <div className="flex flex-col w-[100%]">
             <h2 className={`${poppinsSemiBold.className} text-2xl mb-4`}>
               10 derniers matchs non nuls
             </h2>
