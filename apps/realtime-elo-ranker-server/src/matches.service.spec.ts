@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MatchesService } from './matches/services/matches.service';
 import { RankingService } from './ranking/services/ranking.service';
 import { ResponsePlayerDto } from './players/dto/response-player.dto';
-import { BadRequestException } from '@nestjs/common';
 import { ResponseMatchDto } from './matches/dto/response-match.dto';
+import { MatchesDatabaseService } from './matches/services/matches-database.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('MatchesService', () => {
   let service: MatchesService;
@@ -24,11 +25,32 @@ describe('MatchesService', () => {
     updatePlayerRanking: jest.fn(),
   };
 
+  const mockMatchesDatabaseService = {
+    addMatch: jest.fn(),
+  };
+
+  // beforeEach(async () => {
+  //   const module: TestingModule = await Test.createTestingModule({
+  //     providers: [
+  //       MatchesService,
+  //       { provide: RankingService, useValue: mockRankingService },
+  //     ],
+  //   }).compile();
+
+  //   service = module.get<MatchesService>(MatchesService);
+  //   rankingService = module.get<RankingService>(RankingService);
+  // });
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MatchesService,
         { provide: RankingService, useValue: mockRankingService },
+        {
+          provide: MatchesDatabaseService,
+          useValue: mockMatchesDatabaseService,
+        },
+        { provide: EventEmitter2, useValue: new EventEmitter2() },
       ],
     }).compile();
 
@@ -66,6 +88,10 @@ describe('MatchesService', () => {
       await service.processMatch(responseMatch);
 
       expect(mockRankingService.updatePlayerRanking).toHaveBeenCalledTimes(2);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
   });
 
