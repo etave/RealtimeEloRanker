@@ -11,7 +11,6 @@ import { MatchesService } from '../services/matches.service';
 import { ResponseMatchDto } from '../dto/response-match.dto';
 import { Response } from 'express';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { HttpExceptionFilter } from '../../common/filters/http-exeception.filter';
 
 @Controller('match')
 export class MatchesController {
